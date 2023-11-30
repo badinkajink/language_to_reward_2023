@@ -35,8 +35,8 @@ _TASK_FLAG = flags.DEFINE_enum(
 _PROMPT_FLAG = flags.DEFINE_string(
     "prompt", "thinker_coder", "prompt to be used"
 )
-# MODEL = "gpt-4"
-MODEL = "gpt-3.5-turbo"
+MODEL = "gpt-4"
+# MODEL = "gpt-3.5-turbo"
 
 colorama.init()
 
