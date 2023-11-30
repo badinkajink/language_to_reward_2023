@@ -24,6 +24,7 @@
 #include <absl/time/clock.h>
 #include <absl/time/time.h>
 #include "mjpc/barkour/barkour.h"
+#include "mjpc/go1/go1.h"
 // DEEPMIND INTERNAL IMPORT
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
@@ -46,6 +47,7 @@ int main(int argc, char** argv) {
 
   mjpc::MjpcApp app({
       std::make_shared<mjpc::language2reward::Barkour>(),
+      std::make_shared<mjpc::language2reward::Go1>(),
   });
   mjpc::agent_grpc::UiAgentService service(app.Sim());
   builder.RegisterService(&service);

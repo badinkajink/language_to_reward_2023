@@ -22,6 +22,7 @@
 #include <absl/log/log.h>
 #include <absl/strings/str_cat.h>
 #include "mjpc/barkour/barkour.h"
+#include "mjpc/go1/go1.h"
 // DEEPMIND INTERNAL IMPORT
 #include <grpcpp/server.h>
 #include <grpcpp/server_builder.h>
