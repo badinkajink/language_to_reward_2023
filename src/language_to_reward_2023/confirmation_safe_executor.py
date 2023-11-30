@@ -28,9 +28,8 @@ from language_to_reward_2023 import safe_executor
 # import safe_executor
 
 
-def default_interpreter() -> str:
-  # return "/usr/bin/python3"
-  return "/home/wxie/miniconda3/bin/python3"
+def default_interpreter() -> str:  
+  return os.getenv("HOME") + "/miniconda3/envs/l2r-go1/bin/python3.11"
 
 
 _SERIOUS_WARNING = (
