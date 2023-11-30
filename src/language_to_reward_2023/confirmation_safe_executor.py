@@ -29,7 +29,8 @@ from language_to_reward_2023 import safe_executor
 
 
 def default_interpreter() -> str:
-  return "/usr/bin/python3"
+  # return "/usr/bin/python3"
+  return "/home/wxie/miniconda3/bin/python3"
 
 
 _SERIOUS_WARNING = (
@@ -97,7 +98,8 @@ class ConfirmationSafeExecutor(safe_executor.SafeExecutor):
     filename = os.path.splitext(os.path.basename(filepath))[0]
     directory = os.path.dirname(filepath)
     pycache_dir = os.path.join(directory, "__pycache__")
-    pyc_filepath = os.path.join(pycache_dir, filename + ".cpython-310.pyc")
+    # pyc_filepath = os.path.join(pycache_dir, filename + ".cpython-310.pyc")
+    pyc_filepath = os.path.join(pycache_dir, filename + ".cpython-311.pyc")
     # pyc_filepath = os.path.join(pycache_dir, filename + "c")
 
     # Now execute the pyc file
