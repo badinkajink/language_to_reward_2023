@@ -18,7 +18,9 @@
 import time
 from typing import Any
 
-import openai
+from openai import OpenAI
+
+client = OpenAI()
 import termcolor
 
 from language_to_reward_2023.platforms import llm_prompt
@@ -26,18 +28,16 @@ from language_to_reward_2023.platforms import llm_prompt
 
 def _open_ai_call_with_retry(
     model: str, messages: list[Any]
-) -> openai.ChatCompletion:
+):
   """Call OpenAI API with retry."""
   reset_trigger_phrases = ["CHOICE", "NUM"]
   success = False
   completion = None
   while not success:
     try:
-      completion = openai.ChatCompletion.create(
-          model=model,
-          messages=messages,
-          temperature=0.3,
-      )
+      completion = client.chat.completions.create(model=model,
+      messages=messages,
+      temperature=0.3)
       success = True
       for reset_trigger_phrase in reset_trigger_phrases:
         if reset_trigger_phrase in completion.choices[0].message.content:
