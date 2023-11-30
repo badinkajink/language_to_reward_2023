@@ -3,6 +3,8 @@ add_executable(
   headless_server.cc
   barkour/barkour.cc
   barkour/barkour.h
+  go1/go1.cc
+  go1/go1.h
 )
 
 target_link_libraries(
@@ -28,6 +30,8 @@ add_executable(
   ui_server.cc
   barkour/barkour.cc
   barkour/barkour.h
+  go1/go1.cc
+  go1/go1.h
 )
 
 target_link_libraries(
@@ -48,5 +52,6 @@ target_compile_options(l2r_ui_server PUBLIC ${AGENT_SERVICE_COMPILE_OPTIONS})
 target_link_options(l2r_ui_server PRIVATE ${AGENT_SERVICE_LINK_OPTIONS})
 
 add_subdirectory(barkour)
-add_dependencies(l2r_headless_server copy_barkour_resources)
-add_dependencies(l2r_ui_server copy_barkour_resources)
+add_subdirectory(go1)
+add_dependencies(l2r_headless_server copy_barkour_resources copy_go1_resources)
+add_dependencies(l2r_ui_server copy_barkour_resources copy_go1_resources)
