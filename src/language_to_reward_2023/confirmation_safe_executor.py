@@ -25,6 +25,7 @@ import tempfile
 import termcolor
 
 from language_to_reward_2023 import safe_executor
+# import safe_executor
 
 
 def default_interpreter() -> str:
@@ -77,26 +78,27 @@ class ConfirmationSafeExecutor(safe_executor.SafeExecutor):
 
     # Start by compiling the code to pyc (to get compilation errors)
     try:
-      subprocess.run(
-          [self._interpreter_path, "-m", "compileall", "-b", filepath],
-          check=True,
-      )
-      # subprocess.run(["/usr/bin/python3", "-m", "compileall", "-b", "-d", "__pycache__", "test.py"], check=True,)
       # subprocess.run(
-      #     [self._interpreter_path, "-m", "py_compile", filepath],
+      #     [self._interpreter_path, "-m", "compileall", "-b", filepath],
       #     check=True,
       # )
+      # subprocess.run(["/usr/bin/python3", "-m", "compileall", "-b", "-d", "__pycache__", "test.py"], check=True,)
+      subprocess.run(
+          [self._interpreter_path, "-m", "py_compile", filepath],
+          check=True,
+      )
     except subprocess.CalledProcessError as e:
       raise ValueError("Failed to compile code.") from e
     finally:
       os.unlink(filepath)
 
     # py_compile should output a pyc file in the pycache directory
-    filename = os.path.basename(filepath)
+    # filename = os.path.basename(filepath)
+    filename = os.path.splitext(os.path.basename(filepath))[0]
     directory = os.path.dirname(filepath)
-    # pycache_dir = os.path.join(directory, "__pycache__")
-    pycache_dir = os.path.join(directory, "")
-    pyc_filepath = os.path.join(pycache_dir, filename + "c")
+    pycache_dir = os.path.join(directory, "__pycache__")
+    pyc_filepath = os.path.join(pycache_dir, filename + ".cpython-310.pyc")
+    # pyc_filepath = os.path.join(pycache_dir, filename + "c")
 
     # Now execute the pyc file
     try:
@@ -112,3 +114,6 @@ class ConfirmationSafeExecutor(safe_executor.SafeExecutor):
     finally:
       os.unlink(pyc_filepath)
     return completed_process.stdout.decode("utf-8")
+
+if __name__ == "__main__":
+  pass
