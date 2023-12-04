@@ -161,7 +161,7 @@ class CopyTaskAssetsCommand(setuptools.Command):
   def run(self):
     l2r_root = Path(__file__).parent
     l2r_build_dir = l2r_root / "build"
-    mjpc_task_paths = [l2r_build_dir / "mjpc" / "barkour"]
+    mjpc_task_paths = [l2r_build_dir / "mjpc" / "barkour", l2r_build_dir / "mjpc" / "go1"]
     for task_path in mjpc_task_paths:
       relative_task_path = task_path.relative_to(l2r_build_dir)
       assert self.build_lib is not None
