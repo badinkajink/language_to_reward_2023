@@ -132,6 +132,8 @@ class Go1Flat : public mjpc::Task {
 
     // posture gain factors for abduction, hip, knee
     constexpr static double kJointPostureGain[3] = {2, 1, 1};  // unitless
+    
+    constexpr static char kRootJointName[] = "trunk";
 
     // flip: crouching height, from which leap is initiated
     constexpr static double kCrouchHeight = 0.15;     // meter
@@ -168,6 +170,14 @@ class Go1Flat : public mjpc::Task {
     // orientation during flip
     void FlipQuat(double quat[4], double time) const;
 
+    void GetNormalizedFootTrajectory(
+        double duty_ratio, double gait_frequency,
+        double normalized_phase_offset, double time,
+        double amplitude_forward, double amplitude_vertical,
+        double* target_pos_x, double* target_pos_z) const;
+
+    void ResetLocked(const mjModel* model);
+
     //  ============  task state variables, managed by Transition  ============
     A1Mode current_mode_       = kModeQuadruped;
     double last_transition_time_ = -1;
@@ -197,6 +207,39 @@ class Go1Flat : public mjpc::Task {
 
     //  ============  constants, computed in Reset()  ============
     int torso_body_id_        = -1;
+
+      // ===== task parameters id ======
+    int target_body_height_id_ = -1;
+    int goal_position_x_id_ = -1;
+    int goal_position_y_id_ = -1;
+    int target_body_heading_id_ = -1;
+    int target_body_pitch_id_ = -1;
+    int target_body_roll_id_ = -1;
+    int target_forward_velocity_id_ = -1;
+    int target_sideways_velocity_id_ = -1;
+    int target_upward_velocity_id_ = -1;
+    int target_turning_velocity_id_ = -1;
+    int target_roll_velocity_id_ = -1;
+    int balance_ids_[4] = {-1};
+
+    // ==== gait-relevant parameters id ====
+    int dist_from_nominal_ids_[4][3];
+    int stepping_frequency_ids_[4];
+    int ground_to_air_ratio_ids_[4];
+    int phase_offset_ids_[4];
+    int amplitudes_vertical_ids_[4];
+    int amplitudes_forward_ids_[4];
+
+    // ==== joint angle parameters id ====
+    int target_joint_angle_ids_[12];
+
+    // ==== object root joint ids ====
+    int walker_root_joint_id_ = -1;
+
+    double current_base_roll_ = 0;
+
+    int foot_site_id_[kNumFoot];
+
     int head_site_id_         = -1;
     int goal_mocap_id_        = -1;
     int gait_param_id_        = -1;

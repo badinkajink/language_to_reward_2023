@@ -14,21 +14,95 @@
 
 #include "mjpc/go1/go1.h"
 
+#include <cmath>
 #include <string>
+#include <string_view>
 
+#include <absl/log/check.h>
+#include <mujoco/mjmodel.h>
 #include <mujoco/mujoco.h>
 #include "mjpc/task.h"
 #include "mjpc/utilities.h"
 
 namespace mjpc::language2reward {
+
+namespace {  // anonymous namespace for local definitions
+
+constexpr double kNominalFootFromShoulder[4][2] = {{0.05, 0.0},
+                                                   {-0.05, 0.0},
+                                                   {0.05, -0.0},
+                                                   {-0.05, -0.0}};
+
+//  ============  reusable utilities  ============
+
+void RotateVectorAroundZaxis(const double* vec, const double angle,
+                             double* rotated_vec) {
+  rotated_vec[0] = mju_cos(angle) * vec[0] - mju_sin(angle) * vec[1];
+  rotated_vec[1] = mju_sin(angle) * vec[0] + mju_cos(angle) * vec[1];
+  rotated_vec[2] = vec[2];
+}
+
+// Unwind the roll current angle to be close to last measured roll angle
+// to prevent sudden jump of the measured sensor data.
+double UnwindAngle(const double current_roll, const double last_roll) {
+  double vec[3] = {current_roll - 2 * mjPI, current_roll,
+                   current_roll + 2 * mjPI};
+  double closest = vec[0];
+  double min_diff = std::abs(last_roll - vec[0]);
+  for (int i = 1; i < 3; i++) {
+    double diff = std::abs(last_roll - vec[i]);
+    if (diff < min_diff) {
+      min_diff = diff;
+      closest = vec[i];
+    }
+  }
+  return closest;
+}
+
+}  // namespace
+
 std::string Go1Hill::XmlPath() const {
-  return GetModelPath("go1/task_hill.xml");
+  // return GetModelPath("go1/task_hill.xml");
+  return absl::StrCat(
+    mjpc::GetExecutableDir(), "/../mjpc/go1/task_hill.xml");
+
 }
 std::string Go1Flat::XmlPath() const {
-  return GetModelPath("go1/task_flat.xml");
+  // return GetModelPath("go1/task_flat.xml");
+  return absl::StrCat(
+    mjpc::GetExecutableDir(), "/../mjpc/go1/world.xml");
 }
 std::string Go1Hill::Name() const { return "Go1 Hill"; }
 std::string Go1Flat::Name() const { return "Go1 Flat"; }
+
+void Go1Flat::ResidualFn::GetNormalizedFootTrajectory(
+    double duty_ratio, double gait_frequency, double normalized_phase_offset,
+    double time, double amplitude_forward, double amplitude_vertical,
+    double* target_pos_x, double* target_pos_z) const {
+  double step_duration = 1.0 / fmax(gait_frequency, 0.0001);
+  double stance_duration = step_duration * fmin(fmax(duty_ratio, 0.01), 0.99);
+  double flight_duration = step_duration - stance_duration;
+  double gait_start_time = normalized_phase_offset * step_duration;
+  double in_phase_time = fmod((time - gait_start_time), step_duration);
+  if (in_phase_time < 0.0) in_phase_time += step_duration;
+  double normalized_phase = 0.0;
+  bool is_flight_phase = false;
+  if (in_phase_time < flight_duration) {
+    normalized_phase = in_phase_time / flight_duration;
+    is_flight_phase = true;
+  } else {
+    normalized_phase = (in_phase_time - flight_duration) / stance_duration;
+    is_flight_phase = false;
+  }
+  if (is_flight_phase) {
+    *target_pos_z += mju_sin(normalized_phase * mjPI) * amplitude_vertical;
+    *target_pos_x +=
+        mju_sin(normalized_phase * mjPI - mjPI / 2) * amplitude_forward;
+  } else {
+    *target_pos_x +=
+        -mju_sin(normalized_phase * mjPI - mjPI / 2) * amplitude_forward;
+  }
+}
 
 void Go1Flat::ResidualFn::Residual(const mjModel* model,
                                          const mjData* data,
@@ -40,6 +114,10 @@ void Go1Flat::ResidualFn::Residual(const mjModel* model,
   double* foot_pos[kNumFoot];
   for (A1Foot foot : kFootAll)
     foot_pos[foot] = data->geom_xpos + 3 * foot_geom_id_[foot];
+  
+  double* shoulder_pos[kNumFoot];
+  for (A1Foot foot : kFootAll)
+    shoulder_pos[foot] = data->xpos + 3 * shoulder_body_id_[foot];
 
   // average foot position
   double avg_foot_pos[3];
@@ -48,7 +126,94 @@ void Go1Flat::ResidualFn::Residual(const mjModel* model,
   double* torso_xmat = data->xmat + 9*torso_body_id_;
   double* goal_pos = data->mocap_pos + 3*goal_mocap_id_;
   double* compos = SensorByName(model, data, "torso_subtreecom");
+  double pitch = atan2(-torso_xmat[6], mju_sqrt(torso_xmat[7] * torso_xmat[7] +
+                                                torso_xmat[8] * torso_xmat[8]));
+  double roll = atan2(torso_xmat[7], torso_xmat[8]);
+  double torso_heading[2] = {torso_xmat[0], torso_xmat[3]};
 
+  double* comvel = SensorByName(model, data, "torso_subtreelinvel");
+  double* angvel = SensorByName(model, data, "torso_angvel");
+  double linvel_ego[3];
+  RotateVectorAroundZaxis(comvel,
+                          -mju_atan2(torso_heading[1], torso_heading[0]),
+                          linvel_ego);  // Need double check
+
+  // Residual Calculations
+  // ---------- BodyHeight ----------
+  // quadrupedal or bipedal height of torso
+  double* body = SensorByName(model, data, "body");
+  residual[counter++] =
+      body[2] - parameters_[target_body_height_id_];
+
+  // ---------- BodyXYPos ----------
+  double* pos = SensorByName(model, data, "torso_subtreecom");
+  CHECK(pos != nullptr);
+  residual[counter++] = pos[0] - parameters_[goal_position_x_id_];
+  residual[counter++] = pos[1] - parameters_[goal_position_y_id_];
+
+  // ---------- Heading ----------
+  mju_normalize(torso_heading, 2);
+  residual[counter++] =
+      torso_heading[0] - mju_cos(parameters_[target_body_heading_id_]);
+  residual[counter++] =
+      torso_heading[1] - mju_sin(parameters_[target_body_heading_id_]);
+
+  // ---------- Body Roll and Pitch ----------
+  residual[counter++] = pitch - parameters_[target_body_pitch_id_];
+  residual[counter++] =
+      UnwindAngle(roll, current_base_roll_) - parameters_[target_body_roll_id_];
+  residual[counter++] = 0;
+
+  // ---------- Forward Velocity ----------
+  residual[counter++] =
+      linvel_ego[0] - parameters_[target_forward_velocity_id_];
+
+  // ---------- Sideways Velocity ---------
+  residual[counter++] =
+      linvel_ego[1] - parameters_[target_sideways_velocity_id_];
+
+  // ---------- Upward Velocity -----------
+  residual[counter++] = linvel_ego[2] - parameters_[target_upward_velocity_id_];
+
+  // ---------- Roll Pitch Yaw Velocity ----------
+  residual[counter++] = angvel[0] - parameters_[target_roll_velocity_id_];
+  residual[counter++] = angvel[2] - parameters_[target_turning_velocity_id_];
+
+  // ---------- Feet pose tracking -------------
+  double foot_current_poses_yaw_aligned[4][3];
+  double shoulder_yaw_aligned[4][3];
+  double heading_angle = mju_atan2(torso_heading[1], torso_heading[0]);
+
+  for (int foot_id = 0; foot_id < 4; foot_id++) {
+    double shoulder_pos_local[3];
+    mju_sub3(shoulder_pos_local, shoulder_pos[foot_id], compos);
+    RotateVectorAroundZaxis(shoulder_pos_local, -heading_angle,
+                            shoulder_yaw_aligned[foot_id]);
+    double foot_pos_local[3];
+    mju_sub3(foot_pos_local, foot_pos[foot_id], compos);
+    RotateVectorAroundZaxis(foot_pos_local, -heading_angle,
+                            foot_current_poses_yaw_aligned[foot_id]);
+    foot_current_poses_yaw_aligned[foot_id][2] = foot_pos[foot_id][2];
+  }
+  for (int dim = 0; dim < 3; dim++) {
+    for (int foot_id = 0; foot_id < 4; foot_id++) {
+      double foot_pos_delta = parameters_[dist_from_nominal_ids_[foot_id][dim]];
+      double foot_target_pos;
+      if (dim < 2) {
+        if (foot_id >= 2 && dim == 1) {
+          foot_pos_delta *= -1;
+        }
+        foot_target_pos = shoulder_yaw_aligned[foot_id][dim] +
+                          kNominalFootFromShoulder[foot_id][dim] +
+                          foot_pos_delta;
+      } else {
+        // dim == 2
+        foot_target_pos = foot_pos_delta;
+      }
+      residual[counter++] =
+          foot_target_pos - foot_current_poses_yaw_aligned[foot_id][dim];
+    }
+  }
 
   // ---------- Upright ----------
   if (current_mode_ != kModeFlip) {
@@ -147,7 +312,7 @@ void Go1Flat::ResidualFn::Residual(const mjModel* model,
 
 
   // ---------- Balance ----------
-  double* comvel = SensorByName(model, data, "torso_subtreelinvel");
+  // double* comvel = SensorByName(model, data, "torso_subtreelinvel");
   double capture_point[3];
   double fall_time = mju_sqrt(2*height_goal / 9.81);
   mju_addScl3(capture_point, compos, comvel, fall_time);
@@ -162,6 +327,7 @@ void Go1Flat::ResidualFn::Residual(const mjModel* model,
 
   // ---------- Posture ----------
   double* home = KeyQPosByName(model, data, "home");
+  int walker_first_joint_adr = model->jnt_qposadr[walker_root_joint_id_] + 7;
   mju_sub(residual + counter, data->qpos + 7, home + 7, model->nu);
   if (current_mode_ == kModeFlip) {
     double flip_time = data->time - mode_start_time_;
@@ -198,7 +364,7 @@ void Go1Flat::ResidualFn::Residual(const mjModel* model,
 
 
   // ---------- Yaw ----------
-  double torso_heading[2] = {torso_xmat[0], torso_xmat[3]};
+  // double torso_heading[2] = {torso_xmat[0], torso_xmat[3]};
   if (current_mode_ == kModeBiped) {
     int handstand =
         ReinterpretAsInt(parameters_[biped_type_param_id_]) ? 1 : -1;
@@ -214,6 +380,25 @@ void Go1Flat::ResidualFn::Residual(const mjModel* model,
   // ---------- Angular momentum ----------
   mju_copy3(residual + counter, SensorByName(model, data, "torso_angmom"));
   counter +=3;
+
+  // PoseTracking
+  for (int i = 0; i < 12; i++) {
+    residual[counter + i] =
+        parameters_[target_joint_angle_ids_[i]] -
+        *(data->qpos + walker_first_joint_adr + i);
+  }
+  counter += model->nu;
+
+  // ---------- Act dot -----------------
+  // encourage actions to be similar to the previous actions.
+  if (model->na > 0) {
+    mju_copy(residual + counter, data->act_dot, model->na);
+    counter += model->na;
+  } else {
+    for (int i=0; i < 12; i++) {
+      residual[counter++] = 0.;
+    }
+  }
 
   // sensor dim sanity check
   CheckSensorDim(model, counter);
@@ -513,13 +698,20 @@ void Go1Flat::ModifyScene(const mjModel* model, const mjData* data,
 // save task-related ids
 void Go1Flat::ResetLocked(const mjModel* model) {
   // ----------  task identifiers  ----------
-  residual_.gait_param_id_ = ParameterIndex(model, "select_Gait");
-  residual_.gait_switch_param_id_ = ParameterIndex(model, "select_Gait switch");
-  residual_.flip_dir_param_id_ = ParameterIndex(model, "select_Flip dir");
-  residual_.biped_type_param_id_ = ParameterIndex(model, "select_Biped type");
-  residual_.cadence_param_id_ = ParameterIndex(model, "Cadence");
-  residual_.amplitude_param_id_ = ParameterIndex(model, "Amplitude");
-  residual_.duty_param_id_ = ParameterIndex(model, "Duty ratio");
+  // residual_.gait_param_id_ = ParameterIndex(model, "select_Gait");
+  residual_.gait_param_id_ = 0;
+  // residual_.gait_switch_param_id_ = ParameterIndex(model, "select_Gait switch");
+  residual_.gait_switch_param_id_ = 0;
+  // residual_.flip_dir_param_id_ = ParameterIndex(model, "select_Flip dir");
+  residual_.flip_dir_param_id_ = 0;
+  // residual_.biped_type_param_id_ = ParameterIndex(model, "select_Biped type");
+  residual_.biped_type_param_id_ = 0;
+  // residual_.cadence_param_id_ = ParameterIndex(model, "Cadence");
+  residual_.cadence_param_id_ = 0;
+  // residual_.amplitude_param_id_ = ParameterIndex(model, "Amplitude");
+  residual_.amplitude_param_id_ = 0;
+  // residual_.duty_param_id_ = ParameterIndex(model, "Duty ratio");
+  residual_.duty_param_id_ = 0;
   residual_.balance_cost_id_ = CostTermByName(model, "Balance");
   residual_.upright_cost_id_ = CostTermByName(model, "Upright");
   residual_.height_cost_id_ = CostTermByName(model, "Height");
