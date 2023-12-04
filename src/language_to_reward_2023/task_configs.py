@@ -24,6 +24,11 @@ from language_to_reward_2023.platforms.barkour.prompts import prompt_coder_only 
 from language_to_reward_2023.platforms.barkour.prompts import prompt_low_level as bk_prompt_low_level
 from language_to_reward_2023.platforms.barkour.prompts import prompt_thinker_coder as bk_prompt_thinker_coder
 
+from language_to_reward_2023.platforms.go1 import go1_l2r_task_client
+from language_to_reward_2023.platforms.go1.prompts import prompt_coder_only as go1_prompt_coder_only
+from language_to_reward_2023.platforms.go1.prompts import prompt_low_level as go1_prompt_low_level
+from language_to_reward_2023.platforms.go1.prompts import prompt_thinker_coder as go1_prompt_thinker_coder
+
 
 @dataclasses.dataclass(frozen=True)
 class TaskConfig:
@@ -38,6 +43,14 @@ ALL_TASKS = {
             'thinker_coder': bk_prompt_thinker_coder.PromptThinkerCoder,
             'coder_only': bk_prompt_coder_only.PromptCoder,
             'low_level': bk_prompt_low_level.PromptLowLevel,
+        },
+    ),
+    'go1flat': TaskConfig(
+        client=go1_l2r_task_client.Go1Client,
+        prompts={
+            'thinker_coder': go1_prompt_thinker_coder.PromptThinkerCoder,
+            'coder_only': go1_prompt_coder_only.PromptCoder,
+            'low_level': go1_prompt_low_level.PromptLowLevel,
         },
     ),
 }
