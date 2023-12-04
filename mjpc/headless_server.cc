@@ -46,7 +46,9 @@ int main(int argc, char** argv) {
   builder.AddListeningPort(server_address, server_credentials);
 
   mjpc::agent_grpc::AgentService service(
-      {std::make_shared<mjpc::language2reward::Barkour>()},
+      {std::make_shared<mjpc::language2reward::Barkour>(),
+       std::make_shared<mjpc::language2reward::Go1Flat>(),
+       std::make_shared<mjpc::language2reward::Go1Hill>()},
       absl::GetFlag(FLAGS_mjpc_workers));
   builder.RegisterService(&service);
 

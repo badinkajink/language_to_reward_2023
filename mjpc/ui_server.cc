@@ -47,7 +47,8 @@ int main(int argc, char** argv) {
 
   mjpc::MjpcApp app({
       std::make_shared<mjpc::language2reward::Barkour>(),
-      std::make_shared<mjpc::language2reward::Go1>(),
+      std::make_shared<mjpc::language2reward::Go1Flat>(),
+      std::make_shared<mjpc::language2reward::Go1Hill>(),
   });
   mjpc::agent_grpc::UiAgentService service(app.Sim());
   builder.RegisterService(&service);
