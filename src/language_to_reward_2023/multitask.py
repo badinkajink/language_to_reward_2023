@@ -3,6 +3,7 @@ import threading
 import subprocess
 import os, fcntl, sys
 from queue import Queue
+import termcolor
 
 # https://github.com/correlllab/MAGPIE/blob/camera_stream/magpie/interprocess.py#L53
 ########## STREAM COMMUNICATION ####################################################################
@@ -54,11 +55,8 @@ def main():
         "language_to_reward_2023.user_interaction",
         "--api_key=" + openai_api_key,
         "--model=gpt-3.5-turbo"
+        # "--model=gpt-4"
     ]
-    # user_interaction_command = [
-    #     "python",
-    #     "src/language_to_reward_2023/test_agent.py",
-    # ]
     user_interaction_process = subprocess.Popen(
         user_interaction_command,
         stdin=subprocess.PIPE,
@@ -97,7 +95,9 @@ def main():
             while True:
                 output = non_block_read(user_interaction_process.stdout)
                 # output = user_interaction_process.stdout.readline().strip()
+                color = "white"
                 if output is not None:
+                    output = termcolor.colored(f"\n{output}", f"{color}", attrs=["bold"])
                     print(f"Subprocess output: {output}")
                     if "to continue" in output:
                         send_user_input(user_interaction_process, "yes", input_queue)
@@ -109,6 +109,7 @@ def main():
                 if output is not None:
                     print(f"Subprocess output: {output}")
                     if "User:" in output:
+                        print("Subprocess output: " + (termcolor.colored(f"\n{output}", "red", attrs=["bold"])))
                         time.sleep(1)
                         break
 
