@@ -1,9 +1,33 @@
 import time
 import threading
 import subprocess
-import os
+import os, fcntl, sys
 from queue import Queue
 
+# https://github.com/correlllab/MAGPIE/blob/camera_stream/magpie/interprocess.py#L53
+########## STREAM COMMUNICATION ####################################################################
+
+def set_non_blocking( output ):
+    ''' even in a thread, a normal read with block until the buffer is full '''
+    # Original Author, Chase Seibert: https://chase-seibert.github.io/blog/2012/11/16/python-subprocess-asynchronous-read-stdout.html
+    fd = output.fileno()
+    fl = fcntl.fcntl( fd, fcntl.F_GETFL )
+    fcntl.fcntl( fd, fcntl.F_SETFL, fl | os.O_NONBLOCK )
+
+def non_block_read( output ):
+    """ Attempt a read from an un-blocked stream, If nothing received, then return empty string """
+    # Original Author, Chase Seibert: https://chase-seibert.github.io/blog/2012/11/16/python-subprocess-asynchronous-read-stdout.html
+    try:
+        out = output.read()
+        if out is None:
+            # return bytes()
+            return None
+        # return bytes( out )
+        return out
+    except:
+        # return bytes()
+        return None
+    
 def send_user_input(process, user_input, input_queue):
     # Send user input to the subprocess
     process.stdin.write(user_input + "\n")
@@ -29,7 +53,12 @@ def main():
         "-m",
         "language_to_reward_2023.user_interaction",
         "--api_key=" + openai_api_key,
+        "--model=gpt-3.5-turbo"
     ]
+    # user_interaction_command = [
+    #     "python",
+    #     "src/language_to_reward_2023/test_agent.py",
+    # ]
     user_interaction_process = subprocess.Popen(
         user_interaction_command,
         stdin=subprocess.PIPE,
@@ -38,6 +67,7 @@ def main():
         text=True,
         bufsize=1,  # Line-buffered for real-time interaction
     )
+    set_non_blocking(user_interaction_process.stdout)
     user_interaction_thread = threading.Thread(
         target=lambda: send_user_input(user_interaction_process, "init", input_queue)
     )
@@ -47,11 +77,17 @@ def main():
     try:
         # Wait for the subprocess to output the "User:" prompt
         while True:
-            output = user_interaction_process.stdout.readline().strip()
-            print(f"Subprocess output: {output}")
-            if "User:" in output:
-                break
-            time.sleep(1)
+            output = non_block_read(user_interaction_process.stdout)
+            # output = user_interaction_process.stdout
+            if output is not None:
+                # output = output.readline().strip()
+                # print(len(output))
+                print(output)
+
+                print(f"Subprocess output: {output}")
+                if "User:" in output:
+                    break
+                time.sleep(1)
 
         # Simulate user input and interaction in a continuous loop
         for user_input in ["walk for 2 seconds", "turn left", "trot excitedly for 2 seconds"]:
@@ -59,17 +95,22 @@ def main():
 
             # Wait for the subprocess to output the "to continue" message
             while True:
-                output = user_interaction_process.stdout.readline().strip()
-                print(f"Subprocess output: {output}")
-                if "to continue" in output:
-                    send_user_input(user_interaction_process, "yes", input_queue)
-                    break
-                time.sleep(1)
+                output = non_block_read(user_interaction_process.stdout)
+                # output = user_interaction_process.stdout.readline().strip()
+                if output is not None:
+                    print(f"Subprocess output: {output}")
+                    if "to continue" in output:
+                        send_user_input(user_interaction_process, "yes", input_queue)
+                        time.sleep(5)
+                        break
             
-            # while True:
-            #     if "User:" in output:
-            #         break
-            #     time.sleep(1)
+            while True:
+                output = non_block_read(user_interaction_process.stdout)
+                if output is not None:
+                    print(f"Subprocess output: {output}")
+                    if "User:" in output:
+                        time.sleep(1)
+                        break
 
             # Process the output
             processed_output = input_queue.get()
