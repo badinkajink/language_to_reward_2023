@@ -18,7 +18,7 @@ def send_user_input(process, user_input, input_queue):
 
 def main():
     # Replace this with your actual OpenAI API key
-    openai_api_key = api_key = os.getenv("OPENAI_API_KEY")
+    openai_api_key = os.getenv("OPENAI_API_KEY")
 
     # Create a Queue for communication
     input_queue = Queue()
@@ -62,12 +62,8 @@ def main():
                 output = user_interaction_process.stdout.readline().strip()
                 print(f"Subprocess output: {output}")
                 if "to continue" in output:
-                    if "yes" in output:
-                        send_user_input(user_interaction_process, "yes", input_queue)
-                        break
-                    else:
-                        send_user_input(user_interaction_process, "y", input_queue)
-                        break
+                    send_user_input(user_interaction_process, "yes", input_queue)
+                    break
                 time.sleep(1)
             
             # while True:
@@ -78,6 +74,7 @@ def main():
             # Process the output
             processed_output = input_queue.get()
             print(f"Processed output: {processed_output}\n")
+            print(input_queue)
             time.sleep(1)  # Allow time for processing
 
 

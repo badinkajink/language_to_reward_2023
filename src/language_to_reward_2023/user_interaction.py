@@ -35,8 +35,11 @@ _TASK_FLAG = flags.DEFINE_enum(
 _PROMPT_FLAG = flags.DEFINE_string(
     "prompt", "thinker_coder", "prompt to be used"
 )
-MODEL = "gpt-4"
-# MODEL = "gpt-3.5-turbo"
+_MODEL_FLAG = flags.DEFINE_string(
+    "model", "gpt-3.5-turbo", "model to be used"
+)
+# MODEL = "gpt-4"
+MODEL = "gpt-3.5-turbo"
 
 colorama.init()
 
@@ -48,7 +51,7 @@ def main(argv: List[str]) -> None:
   safe_executor = confirmation_safe_executor.ConfirmationSafeExecutor()
 
   assert _TASK_FLAG.value in task_configs.ALL_TASKS
-
+  MODEL = _MODEL_FLAG.value
   openai.api_key = _API_KEY_FLAG.value
   task_config = task_configs.ALL_TASKS[_TASK_FLAG.value]
   if _PROMPT_FLAG.value not in task_config.prompts:
@@ -63,6 +66,10 @@ def main(argv: List[str]) -> None:
   client_class: Any = task_config.client
   client = client_class(ui=True)
 
+  print(
+      "Starting MJPC UI - Initialization complete"
+  )
+
   try:
     # send the grpc channel to the prompt model to create stub
     prompt_model = prompt(
@@ -73,6 +80,7 @@ def main(argv: List[str]) -> None:
 
     while True:
       user_command = input(termcolor.colored("User: ", "red", attrs=["bold"]))
+      # user_command = "nothing"
       try:
         response = conv.send_command(user_command)
       except Exception as e:  # pylint: disable=broad-exception-caught
