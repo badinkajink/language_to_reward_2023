@@ -44,7 +44,7 @@ cd language_to_reward_2023
 pip install .
 
 # Run the demo
-python -m language_to_reward_2023.user_interaction --api_key=<Open AI API key>
+python -m language_to_reward_2023.user_interaction --api_key=$OPENAI_API_KEY$
 ```
 
 ## Notes
