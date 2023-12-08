@@ -78,7 +78,6 @@ def main(argv: List[str]) -> None:
     )
     conv = conversation.Conversation(prompt_model, MODEL)
     client.reset()
-
     response = '''
 import numpy as np  # import numpy because we are using it below
 
@@ -95,6 +94,26 @@ set_foot_stepping_parameters('front_left', 0.0, 0.0, 0.0, 0.0, 0.0, False)
 set_foot_stepping_parameters('back_right', 0.0, 0.0, 0.0, 0.0, 0.0, False)
 
 execute_plan(4)
+'''
+    response = '''
+import numpy as np  # Import numpy as we'll use it for angle conversions
+
+# Since this is not a new task, we don't need to reset reward and we just continue with setting targets.
+
+# Torso targets to make the robot's torso stay at a height of 0.3 meters, 0 degree pitch and roll, and move forward at 1.5m/s
+set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (1.5, 0.0), None, None)
+
+# Stepping parameters for the front_left foot
+set_foot_stepping_parameters('front_left', 2.5, 0.5, 0.0, 0.2, 0.2, True)
+# Stepping parameters for the back_left foot
+set_foot_stepping_parameters('back_left', 2.5, 0.5, 0.5, 0.2, 0.2, True)
+# Stepping parameters for the front_right foot
+set_foot_stepping_parameters('front_right', 2.5, 0.5, 0.5, 0.2, 0.2, True)
+# Stepping parameters for the back_right foot
+set_foot_stepping_parameters('back_right', 2.5, 0.5, 0.0, 0.2, 0.2, True)
+
+# Execute the plan
+execute_plan()
 '''
     reset = '''
 reset_reward()
