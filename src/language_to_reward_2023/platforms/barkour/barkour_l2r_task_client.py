@@ -63,7 +63,8 @@ class BarkourClient(task_clients.AgentApiTaskClient):
     agent = agent or task_clients.create_agent(
         task_id='Barkour',
         ui=ui,
-        real_time_speed=0.4,
+        # real_time_speed=0.4,
+        real_time_speed=0.25,
     )
     model = agent.model or mujoco.MjModel.from_xml_path(_MODEL_PATH)
 
