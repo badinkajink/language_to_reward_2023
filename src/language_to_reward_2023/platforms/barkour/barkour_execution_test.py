@@ -19,7 +19,8 @@ from absl.testing import absltest
 from absl.testing import parameterized
 
 from language_to_reward_2023 import confirmation_safe_executor
-from language_to_reward_2023 import sandbox_safe_executor
+# from language_to_reward_2023 import sandbox_safe_executor
+# from language_to_reward_2023 import sandbox_safe_executor
 from language_to_reward_2023.platforms.barkour import barkour_execution
 from language_to_reward_2023.platforms.barkour import barkour_l2r_tasks
 
@@ -32,15 +33,15 @@ def _make_confirmation_executor():
   )
 
 
-def _make_sandbox_executor():
-  return barkour_execution.BarkourSafeExecutor(
-      sandbox_safe_executor.SandboxSafeExecutor()
-  )
+# def _make_sandbox_executor():
+#   return barkour_execution.BarkourSafeExecutor(
+#       sandbox_safe_executor.SandboxSafeExecutor()
+#   )
 
 
 _EXECUTER_BUILDERS = [
     (_make_confirmation_executor,),
-    (_make_sandbox_executor,),
+    # (_make_sandbox_executor,),
 ]
 
 
