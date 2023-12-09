@@ -64,7 +64,10 @@ Rules:
 10. Do not add additional descriptions not shown above. Only use the bullet points given in the template.
 11. If a bullet point is marked [optional], do NOT add it unless it's absolutely needed.
 12. Use as few bullet points as possible. Be concise.
-
+13. For emotions like excitement, increase stepping frequency and torso height. For jumping actions, temporarily increase torso height.
+14. For stern patrolling, make leg movements more pronounced and deliberate, with larger air portions vs gait.
+15. For an anxious or scared state, the robot may lie down (lower torso height) with front legs lowered and hind legs raised. It can also move backwards slowly.
+16. Use your best judgement to extrapoloate from the given emotive action examples to describe other behaviors and emotions.
 """
 
 prompt_coder = """
@@ -135,7 +138,9 @@ Remember:
 5. Do not calculate the position or direction of any object (except for the ones provided above). Just use a number directly based on your best guess.
 6. For set_torso_targets, only the last four arguments (target_torso_location_xy, target_torso_velocity_xy, target_torso_heading, target_turning_speed) can be None. Do not set None for any other arguments.
 7. Don't forget to call execute_plan at the end.
-
+8. Emotions affect the movement: Adjust stepping frequency, air_ratio, and torso height based on the emotional state described.
+9. Implementing special postures: If not walking, adjust foot positioning and torso height for postures like lying down with the hind legs raised or patrolling.
+10. For backward movement, set a negative forward velocity in set_torso_targets.
 """
 
 
