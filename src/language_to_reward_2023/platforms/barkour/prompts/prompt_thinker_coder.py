@@ -64,6 +64,14 @@ Rules:
 10. Do not add additional descriptions not shown above. Only use the bullet points given in the template.
 11. If a bullet point is marked [optional], do NOT add it unless it's absolutely needed.
 12. Use as few bullet points as possible. Be concise.
+13. Introduce subtle variations in torso pitch and roll angles to convey different emotional states. For example, higher pitch angles may imply excitement or alertness, while lower pitch angles may suggest relaxation or fear.
+14. Adjust the frequency and range of foot movements to reflect the robot dog's emotional intensity. Consider faster, more dynamic motions for excitement and slower, deliberate movements for calm or cautious emotions.
+15. Experiment with torso heading variations to simulate the robot dog's focus on different points of interest, enhancing the expression of curiosity, alertness, or specific emotional states.
+16. Explore combinations of foot lifting, extension, and lateral shifts to mimic behaviors associated with emotions, such as aggression, playfulness, or hesitation.
+17. Use phase offsets and air vs. ground ratios creatively to evoke a sense of rhythm and emotion in the robot dog's movements. Consider synchronized or staggered foot placements for different emotional expressions.
+"""
+
+cut = """
 13. For emotions like excitement, increase stepping frequency and torso height. For jumping actions, temporarily increase torso height.
 14. For stern patrolling, make leg movements more pronounced and deliberate, with larger air portions vs gait.
 15. For an anxious or scared state, the robot may lie down (lower torso height) with front legs lowered and hind legs raised. It can also move backwards slowly.
@@ -138,8 +146,14 @@ Remember:
 5. Do not calculate the position or direction of any object (except for the ones provided above). Just use a number directly based on your best guess.
 6. For set_torso_targets, only the last four arguments (target_torso_location_xy, target_torso_velocity_xy, target_torso_heading, target_turning_speed) can be None. Do not set None for any other arguments.
 7. Don't forget to call execute_plan at the end.
+8. Consider incorporating variations in torso pitch, roll, and heading parameters to capture different emotional states in the robot dog's posture. Higher pitch angles may indicate excitement, while lower angles may signify relaxation or caution.
+9. Adjust foot lifting, extension, and lateral movements to reflect the emotional intensity and behaviors associated with different states, such as playfulness, aggression, or hesitation.
+10. Experiment with phase offsets and air vs. ground ratios to introduce a sense of rhythm and emotion in the robot dog's gait. Use synchronized or staggered foot placements to convey specific emotional expressions.
+11. Be creative in using the provided parameters to simulate a wide range of emotions, allowing the robot dog to exhibit nuanced behaviors in response to various stimuli.
+"""
+cut2 = """
 8. Emotions affect the movement: Adjust stepping frequency, air_ratio, and torso height based on the emotional state described.
-9. Implementing special postures: If not walking, adjust foot positioning and torso height for postures like lying down with the hind legs raised or patrolling.
+9. Implementing special postures: If not walking, adjust foot positioning and torso height for postures like lying down with the hind legs.
 10. For backward movement, set a negative forward velocity in set_torso_targets.
 """
 
