@@ -1,0 +1,345 @@
+User: walk sternly like a patrol dog
+I1212 15:59:44.267678 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM0 queried
+[start of description]
+* This is a new task.
+* The torso of the robot should roll by 0.0 degrees towards right, the torso should pitch upward at 0.0 degrees.
+* The height of the robot's CoM or torso center should be at 0.3 meters.
+* The robot should move at certain speed. It should move forward at 0.5m/s and sideways at 0.0m/s (positive means left).
+* front_left foot steps on the ground at a frequency of 1.0 Hz, during the stepping motion, the foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.3 portion of the time in the air vs gait cycle.
+* back_left foot steps on the ground at a frequency of 1.0 Hz, during the stepping motion, the foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.3 portion of the time in the air vs gait cycle.
+* front_right foot steps on the ground at a frequency of 1.0 Hz, during the stepping motion, the foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.3 portion of the time in the air vs gait cycle.
+* back_right foot steps on the ground at a frequency of 1.0 Hz, during the stepping motion, the foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.3 portion of the time in the air vs gait cycle.
+* The phase offsets for the four legs should be front_left: 0.0, back_left: 0.5, front_right: 0.5, back_right: 0.0.
+[end of description]
+
+I1212 16:00:25.955009 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM1 queried
+Here is the corresponding program for the robot's motion:
+
+```python
+import numpy as np
+
+# Reset reward for the new task
+reset_reward()
+
+# Set torso targets
+set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (0.5, 0.0), None, None)
+
+# Set foot position parameters
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+# Set foot stepping parameters
+set_foot_stepping_parameters('front_left', 1.0, 0.3, 0.0, 0.05, 0.05, True)
+set_foot_stepping_parameters('back_left', 1.0, 0.3, 0.5, 0.05, 0.05, True)
+set_foot_stepping_parameters('front_right', 1.0, 0.3, 0.5, 0.05, 0.05, True)
+set_foot_stepping_parameters('back_right', 1.0, 0.3, 0.0, 0.05, 0.05, True)
+
+# Execute the plan
+execute_plan()
+```
+
+This code will make the robot move forward at a speed of 0.5m/s with all four feet stepping on the ground at a frequency of 1.0 Hz. The foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.3 portion of the time in the air vs gait cycle. The phase offsets for the four legs are front_left: 0.0, back_left: 0.5, front_right: 0.5, back_right: 0.0.
+
+ABOUT TO EXECUTE
+ import numpy as np
+
+# Reset reward for the new task
+reset_reward()
+
+# Set torso targets
+set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (0.5, 0.0), None, None)
+
+# Set foot position parameters
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+# Set foot stepping parameters
+set_foot_stepping_parameters('front_left', 1.0, 0.3, 0.0, 0.05, 0.05, True)
+set_foot_stepping_parameters('back_left', 1.0, 0.3, 0.5, 0.05, 0.05, True)
+set_foot_stepping_parameters('front_right', 1.0, 0.3, 0.5, 0.05, 0.05, True)
+set_foot_stepping_parameters('back_right', 1.0, 0.3, 0.0, 0.05, 0.05, True)
+
+# Execute the plan
+execute_plan()
+
+
+You are about to execute untrusted code.
+Code executed this way can perform any operation on your PC, and can be a security risk.
+Once you have reviewed the code above, type "yes" to continue.
+yes
+User: walk as if you are preening at a dog show
+I1212 16:02:26.971478 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM0 queried
+[start of description]
+* This is a new task.
+* The torso of the robot should roll by 0.0 degrees towards right, the torso should pitch upward at 0.0 degrees.
+* The height of the robot's CoM or torso center should be at 0.3 meters.
+* The robot should move at certain speed. It should move forward at 0.2m/s and sideways at 0.0m/s (positive means left).
+* front_left foot steps on the ground at a frequency of 0.8 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking forward, spending 0.1 portion of the time in the air vs gait cycle.
+* back_left foot steps on the ground at a frequency of 0.8 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking forward, spending 0.1 portion of the time in the air vs gait cycle.
+* front_right foot steps on the ground at a frequency of 0.8 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking forward, spending 0.1 portion of the time in the air vs gait cycle.
+* back_right foot steps on the ground at a frequency of 0.8 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking forward, spending 0.1 portion of the time in the air vs gait cycle.
+* The phase offsets for the four legs should be front_left: 0.0, back_left: 0.5, front_right: 0.5, back_right: 0.0.
+[end of description]
+
+I1212 16:03:03.290227 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM1 queried
+Here is the corresponding program:
+
+```python
+import numpy as np
+
+reset_reward() # This is a new task so reset reward; otherwise we don't need it
+
+# Set torso targets
+set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (0.2, 0.0), None, None)
+
+# Set foot position parameters
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+# Set foot stepping parameters
+set_foot_stepping_parameters('front_left', 0.8, 0.1, 0.0, 0.02, 0.02, True)
+set_foot_stepping_parameters('back_left', 0.8, 0.1, 0.5, 0.02, 0.02, True)
+set_foot_stepping_parameters('front_right', 0.8, 0.1, 0.5, 0.02, 0.02, True)
+set_foot_stepping_parameters('back_right', 0.8, 0.1, 0.0, 0.02, 0.02, True)
+
+# Execute the plan
+execute_plan(2)
+```
+This program will make the robot walk forward at a speed of 0.2m/s. All four feet will step on the ground at a frequency of 0.8 Hz, moving 0.02 meters up and down, and 0.02 meters forward and back, spending 0.1 portion of the time in the air vs gait cycle. The phase offsets for the four legs are set to make the robot walk in a coordinated manner.
+
+ABOUT TO EXECUTE
+ import numpy as np
+
+reset_reward() # This is a new task so reset reward; otherwise we don't need it
+
+# Set torso targets
+set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (0.2, 0.0), None, None)
+
+# Set foot position parameters
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+# Set foot stepping parameters
+set_foot_stepping_parameters('front_left', 0.8, 0.1, 0.0, 0.02, 0.02, True)
+set_foot_stepping_parameters('back_left', 0.8, 0.1, 0.5, 0.02, 0.02, True)
+set_foot_stepping_parameters('front_right', 0.8, 0.1, 0.5, 0.02, 0.02, True)
+set_foot_stepping_parameters('back_right', 0.8, 0.1, 0.0, 0.02, 0.02, True)
+
+# Execute the plan
+execute_plan(2)
+
+
+About to execute the code above. Type "y" to continue.
+yes
+User: walk excitedly
+I1212 16:05:30.615669 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM0 queried
+[start of description]
+* This is a new task.
+* The torso of the robot should roll by 0.0 degrees towards right, the torso should pitch upward at 0.0 degrees.
+* The height of the robot's CoM or torso center should be at 0.35 meters.
+* The robot should move at certain speed. It should move forward at 0.7m/s and sideways at 0.0m/s (positive means left).
+* front_left foot steps on the ground at a frequency of 1.5 Hz, during the stepping motion, the foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.2 portion of the time in the air vs gait cycle.
+* back_left foot steps on the ground at a frequency of 1.5 Hz, during the stepping motion, the foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.2 portion of the time in the air vs gait cycle.
+* front_right foot steps on the ground at a frequency of 1.5 Hz, during the stepping motion, the foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.2 portion of the time in the air vs gait cycle.
+* back_right foot steps on the ground at a frequency of 1.5 Hz, during the stepping motion, the foot will move 0.05 meters up and down, and 0.05 meters forward and back, drawing a circle as if it's walking forward, spending 0.2 portion of the time in the air vs gait cycle.
+* The phase offsets for the four legs should be front_left: 0.0, back_left: 0.5, front_right: 0.5, back_right: 0.0.
+[end of description]
+
+I1212 16:06:00.540948 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM1 queried
+Here is the corresponding code for the robot's motion:
+
+```python
+import numpy as np
+
+reset_reward() # This is a new task so reset reward; otherwise we don't need it
+
+# Set torso targets
+set_torso_targets(0.35, np.deg2rad(0), np.deg2rad(0), None, (0.7, 0.0), None, None)
+
+# Set foot position parameters
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+# Set foot stepping parameters
+set_foot_stepping_parameters('front_left', 1.5, 0.2, 0.0, 0.05, 0.05, True)
+set_foot_stepping_parameters('back_left', 1.5, 0.2, 0.5, 0.05, 0.05, True)
+set_foot_stepping_parameters('front_right', 1.5, 0.2, 0.5, 0.05, 0.05, True)
+set_foot_stepping_parameters('back_right', 1.5, 0.2, 0.0, 0.05, 0.05, True)
+
+# Execute the plan
+execute_plan(2)
+```
+
+This code will make the robot move forward at a speed of 0.7m/s with a torso height of 0.35m. The four legs will step on the ground at a frequency of 1.5 Hz, and during the stepping motion, each foot will move 0.05 meters up and down, and 0.05 meters forward and back, spending 0.2 portion of the time in the air vs gait cycle. The phase offsets for the four legs are set as front_left: 0.0, back_left: 0.5, front_right: 0.5, back_right: 0.0.
+
+ABOUT TO EXECUTE
+ import numpy as np
+
+reset_reward() # This is a new task so reset reward; otherwise we don't need it
+
+# Set torso targets
+set_torso_targets(0.35, np.deg2rad(0), np.deg2rad(0), None, (0.7, 0.0), None, None)
+
+# Set foot position parameters
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+# Set foot stepping parameters
+set_foot_stepping_parameters('front_left', 1.5, 0.2, 0.0, 0.05, 0.05, True)
+set_foot_stepping_parameters('back_left', 1.5, 0.2, 0.5, 0.05, 0.05, True)
+set_foot_stepping_parameters('front_right', 1.5, 0.2, 0.5, 0.05, 0.05, True)
+set_foot_stepping_parameters('back_right', 1.5, 0.2, 0.0, 0.05, 0.05, True)
+
+# Execute the plan
+execute_plan(2)
+
+
+About to execute the code above. Type "y" to continue.
+yes
+User: walk sadly
+I1212 16:07:46.406893 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM0 queried
+[start of description]
+* This is a new task.
+* The torso of the robot should roll by 0.0 degrees towards right, the torso should pitch upward at 0.0 degrees.
+* The height of the robot's CoM or torso center should be at 0.25 meters.
+* The robot should move at certain speed. It should move forward at 0.2m/s and sideways at 0.0m/s (positive means left).
+* front_left foot steps on the ground at a frequency of 0.6 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking forward, spending 0.1 portion of the time in the air vs gait cycle.
+* back_left foot steps on the ground at a frequency of 0.6 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking forward, spending 0.1 portion of the time in the air vs gait cycle.
+* front_right foot steps on the ground at a frequency of 0.6 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking forward, spending 0.1 portion of the time in the air vs gait cycle.
+* back_right foot steps on the ground at a frequency of 0.6 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking forward, spending 0.1 portion of the time in the air vs gait cycle.
+* The phase offsets for the four legs should be front_left: 0.0, back_left: 0.5, front_right: 0.5, back_right: 0.0.
+[end of description]
+
+I1212 16:08:11.672165 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM1 queried
+Here is the corresponding program for the robot's motion:
+
+```python
+import numpy as np
+
+# Reset reward for a new task
+reset_reward()
+
+# Set torso targets
+set_torso_targets(0.25, np.deg2rad(0), np.deg2rad(0), None, (0.2, 0.0), None, None)
+
+# Set foot position parameters
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+# Set foot stepping parameters
+set_foot_stepping_parameters('front_left', 0.6, 0.1, 0.0, 0.02, 0.02, True)
+set_foot_stepping_parameters('back_left', 0.6, 0.1, 0.5, 0.02, 0.02, True)
+set_foot_stepping_parameters('front_right', 0.6, 0.1, 0.5, 0.02, 0.02, True)
+set_foot_stepping_parameters('back_right', 0.6, 0.1, 0.0, 0.02, 0.02, True)
+
+# Execute the plan
+execute_plan(2)
+```
+This program will make the robot move forward at a speed of 0.2m/s, with the torso at a height of 0.25m. The robot's feet will move in a circular motion as if it's walking forward, with each foot spending 10% of the time in the air. The phase offsets are set such that the front_left and back_right feet move in sync, and the back_left and front_right feet move in sync, but half a cycle out of phase with the other pair of feet.
+
+ABOUT TO EXECUTE
+ import numpy as np
+
+# Reset reward for a new task
+reset_reward()
+
+# Set torso targets
+set_torso_targets(0.25, np.deg2rad(0), np.deg2rad(0), None, (0.2, 0.0), None, None)
+
+# Set foot position parameters
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+# Set foot stepping parameters
+set_foot_stepping_parameters('front_left', 0.6, 0.1, 0.0, 0.02, 0.02, True)
+set_foot_stepping_parameters('back_left', 0.6, 0.1, 0.5, 0.02, 0.02, True)
+set_foot_stepping_parameters('front_right', 0.6, 0.1, 0.5, 0.02, 0.02, True)
+set_foot_stepping_parameters('back_right', 0.6, 0.1, 0.0, 0.02, 0.02, True)
+
+# Execute the plan
+execute_plan(2)
+
+
+About to execute the code above. Type "y" to continue.
+yes
+User: walk backwards as if you are really scared
+I1212 16:09:32.936539 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM0 queried
+[start of description]
+* This is a new task.
+* The torso of the robot should roll by 0.0 degrees towards right, the torso should pitch upward at 0.0 degrees.
+* The height of the robot's CoM or torso center should be at 0.2 meters.
+* The robot should move at certain speed. It should move forward at -0.2m/s and sideways at 0.0m/s (positive means left).
+* front_left foot steps on the ground at a frequency of 0.5 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking back, spending 0.1 portion of the time in the air vs gait cycle.
+* back_left foot steps on the ground at a frequency of 0.5 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking back, spending 0.1 portion of the time in the air vs gait cycle.
+* front_right foot steps on the ground at a frequency of 0.5 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking back, spending 0.1 portion of the time in the air vs gait cycle.
+* back_right foot steps on the ground at a frequency of 0.5 Hz, during the stepping motion, the foot will move 0.02 meters up and down, and 0.02 meters forward and back, drawing a circle as if it's walking back, spending 0.1 portion of the time in the air vs gait cycle.
+* The phase offsets for the four legs should be front_left: 0.0, back_left: 0.5, front_right: 0.5, back_right: 0.0.
+[end of description]
+
+I1212 16:10:06.438224 140079278838848 _client.py:1013] HTTP Request: POST https://api.openai.com/v1/chat/completions "HTTP/1.1 200 OK"
+LLM1 queried
+Here is the corresponding program:
+
+```python
+import numpy as np
+
+reset_reward()
+set_torso_targets(0.2, np.deg2rad(0), np.deg2rad(0), None, (-0.2, 0.0), None, None)
+
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+set_foot_stepping_parameters('front_left', 0.5, 0.1, 0.0, 0.02, -0.02, True)
+set_foot_stepping_parameters('back_left', 0.5, 0.1, 0.5, 0.02, -0.02, True)
+set_foot_stepping_parameters('front_right', 0.5, 0.1, 0.5, 0.02, -0.02, True)
+set_foot_stepping_parameters('back_right', 0.5, 0.1, 0.0, 0.02, -0.02, True)
+
+execute_plan(4)
+```
+
+This program sets the robot to walk backwards at a speed of 0.2m/s, with the torso at a height of 0.2m. The four legs are stepping at a frequency of 0.5Hz, with each foot moving 0.02m up and down and 0.02m forward and back, spending 10% of the time in the air. The phase offsets are set such that the front left and back right feet are in sync, and the back left and front right feet are in sync, but half a cycle out of phase with the other pair.
+
+ABOUT TO EXECUTE
+ import numpy as np
+
+reset_reward()
+set_torso_targets(0.2, np.deg2rad(0), np.deg2rad(0), None, (-0.2, 0.0), None, None)
+
+set_foot_pos_parameters('front_left', None, None, None)
+set_foot_pos_parameters('back_left', None, None, None)
+set_foot_pos_parameters('front_right', None, None, None)
+set_foot_pos_parameters('back_right', None, None, None)
+
+set_foot_stepping_parameters('front_left', 0.5, 0.1, 0.0, 0.02, -0.02, True)
+set_foot_stepping_parameters('back_left', 0.5, 0.1, 0.5, 0.02, -0.02, True)
+set_foot_stepping_parameters('front_right', 0.5, 0.1, 0.5, 0.02, -0.02, True)
+set_foot_stepping_parameters('back_right', 0.5, 0.1, 0.0, 0.02, -0.02, True)
+
+execute_plan(4)

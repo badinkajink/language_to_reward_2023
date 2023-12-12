@@ -28,6 +28,9 @@ from language_to_reward_2023 import confirmation_safe_executor
 from language_to_reward_2023 import conversation
 from language_to_reward_2023 import task_configs
 
+from sentiment_affordance_model_comparison.l2r_baseline_responses import responses as l2r_responses
+from sentiment_affordance_model_comparison.chatgpt_plus_responses import responses as chatgpt_plus_responses
+from sentiment_affordance_model_comparison.codex_responses import responses as codex_responses
 
 _API_KEY_FLAG = flags.DEFINE_string("api_key", "", "OpenAI API Key")
 _TASK_FLAG = flags.DEFINE_enum(
@@ -95,222 +98,13 @@ set_foot_stepping_parameters('back_right', 0.0, 0.0, 0.0, 0.0, 0.0, False)
 
 execute_plan(4)
 '''
-    respones = []
-    # (orig prompt) walk sternly like a patrol dog
-    response = '''
-import numpy as np
 
-# Reset reward since this is a new task
-reset_reward()
-
-# Set torso targets
-set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (1.0, 0.0), 0, None)
-
-# Set foot position parameters
-set_foot_pos_parameters('front_left', 0.0, 0.0, 0.0)
-set_foot_pos_parameters('back_left', 0.0, 0.0, 0.0)
-set_foot_pos_parameters('front_right', 0.0, 0.0, 0.0)
-set_foot_pos_parameters('back_right', 0.0, 0.0, 0.0)
-
-# Set foot stepping parameters
-set_foot_stepping_parameters('front_left', 1.0, 0.2, 0.0, 0.1, 0.2, True)
-set_foot_stepping_parameters('back_left', 1.0, 0.2, 0.5, 0.1, 0.2, True)
-set_foot_stepping_parameters('front_right', 1.0, 0.2, 0.5, 0.1, 0.2, True)
-set_foot_stepping_parameters('back_right', 1.0, 0.2, 0.0, 0.1, 0.2, True)
-
-# Execute plan for 2 seconds
-execute_plan(2)
-'''
-    respones.append(response)
-    # walk sternly like a patrol dog
-    response = '''
-# Set up the torso targets for patrolling
-set_torso_targets(0.3, 0, 0, None, (0.5, 0.0), None, None)
-
-#Set foot stepping parameters for a stern patrolling gait
-set_foot_stepping_parameters('front_left', 1.5, 0.6, 0.0, 0.05, 0.1, True)
-set_foot_stepping_parameters('back_left', 1.5, 0.6, 0.5, 0.05, 0.1, True)
-set_foot_stepping_parameters('front_right', 1.5, 0.6, 0.5, 0.05, 0.1, True)
-set_foot_stepping_parameters('back_right', 1.5, 0.6, 0.0, 0.05, 0.1, True)
-#Execute the plan for the robot to patrol the hallway
-execute_plan()
-'''
-    respones.append(response)
-    # (orig prompt) walk as if you are preening at a dog show
-    response = '''
-import numpy as np
-
-# Reset reward for new task
-reset_reward()
-
-# Set torso targets
-set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (0.5, 0), 0, None)
-
-# Set foot position parameters
-set_foot_pos_parameters('front_left', None, None, None)
-set_foot_pos_parameters('back_left', None, None, None)
-set_foot_pos_parameters('front_right', None, None, None)
-set_foot_pos_parameters('back_right', None, None, None)
-
-# Set foot stepping parameters
-set_foot_stepping_parameters('front_left', 1.0, 0.2, 0.0, 0.05, 0.05, True)
-set_foot_stepping_parameters('back_left', 1.0, 0.2, 0.5, 0.05, 0.05, True)
-set_foot_stepping_parameters('front_right', 1.0, 0.2, 0.5, 0.05, 0.05, True)
-set_foot_stepping_parameters('back_right', 1.0, 0.2, 0.0, 0.05, 0.05, True)
-
-# Execute plan
-execute_plan()
-'''
-    respones.append(response)
-    # walk as if you are preening at a dog show
-    response = '''
-import numpy as np
-
-# Set up the torso targets for preening walk at a dog show
-set_torso_targets(0.4, np.deg2rad(10), 0, None, (0.8, 0.0), None, None)
-
-# Set foot stepping parameters for a preening walk
-set_foot_stepping_parameters('front_left', 2.0, 0.4, 0.0, 0.15, 0.2, True)
-set_foot_stepping_parameters('back_left', 2.0, 0.4, 0.5, 0.15, 0.2, True)
-set_foot_stepping_parameters('front_right', 2.0, 0.4, 0.5, 0.15, 0.2, True)
-set_foot_stepping_parameters('back_right', 2.0, 0.4, 0.0, 0.15, 0.2, True)
-
-# Execute the plan for the robot to walk as if it is preening at a dog show
-execute_plan()
-'''
-    respones.append(response)
-    # (orig prompt) walk excitedly
-    response = '''
-import numpy as np
-
-# Reset reward for new task
-reset_reward()
-
-# Set torso targets
-set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (1.0, 0.0), 0, None)
-
-# Set foot position parameters
-set_foot_pos_parameters('front_left', None, None, None)
-set_foot_pos_parameters('back_left', None, None, None)
-set_foot_pos_parameters('front_right', None, None, None)
-set_foot_pos_parameters('back_right', None, None, None)
-
-# Set foot stepping parameters
-set_foot_stepping_parameters('front_left', 2.0, 0.5, 0.0, 0.05, 0.05, True)
-set_foot_stepping_parameters('back_left', 2.0, 0.5, 0.5, 0.05, 0.05, True)
-set_foot_stepping_parameters('front_right', 2.0, 0.5, 0.5, 0.05, 0.05, True)
-set_foot_stepping_parameters('back_right', 2.0, 0.5, 0.0, 0.05, 0.05, True)
-
-# Execute plan
-execute_plan(2)    
-'''
-    respones.append(response)
-    # walk excitedly
-    response = '''
-import numpy as np
-
-# Set up the torso targets for excited walking
-set_torso_targets(0.3, 0, 0, None, (1.5, 0.0), None, None)
-
-# Set foot stepping parameters for an excited walk
-set_foot_stepping_parameters('front_left', 2.5, 0.7, 0.0, 0.1, 0.15, True)
-set_foot_stepping_parameters('back_left', 2.5, 0.7, 0.5, 0.1, 0.15, True)
-set_foot_stepping_parameters('front_right', 2.5, 0.7, 0.5, 0.1, 0.15, True)
-set_foot_stepping_parameters('back_right', 2.5, 0.7, 0.0, 0.1, 0.15, True)
-
-# Execute the plan for the robot to walk excitedly
-execute_plan()    
-'''
-    respones.append(response)
-    # (orig prompt) walk sadly
-    response = '''
-import numpy as np
-
-reset_reward()
-
-# Set the torso targets
-set_torso_targets(0.3, np.deg2rad(0), np.deg2rad(0), None, (0.5, 0.0), 0, None)
-
-# Set the foot position parameters
-set_foot_pos_parameters('front_left', 0.0, 0.0, 0.0)
-set_foot_pos_parameters('back_left', 0.0, 0.0, 0.0)
-set_foot_pos_parameters('front_right', 0.0, 0.0, 0.0)
-set_foot_pos_parameters('back_right', 0.0, 0.0, 0.0)
-
-# Set the foot stepping parameters
-set_foot_stepping_parameters('front_left', 0.5, 0.3, 0.0, 0.05, 0.05, True)
-set_foot_stepping_parameters('back_left', 0.5, 0.3, 0.5, 0.05, 0.05, True)
-set_foot_stepping_parameters('front_right', 0.5, 0.3, 0.5, 0.05, 0.05, True)
-set_foot_stepping_parameters('back_right', 0.5, 0.3, 0.0, 0.05, 0.05, True)
-
-# Execute the plan
-execute_plan(2)
-'''
-    respones.append(response)
-    # walk sadly
-    response = '''
-# Set up the torso targets for sad walking
-set_torso_targets(0.2, 0, 0, None, (0.3, 0.0), None, None)
-
-# Set foot stepping parameters for a sad walk
-set_foot_stepping_parameters('front_left', 1.0, 0.8, 0.0, 0.05, 0.05, True)
-set_foot_stepping_parameters('back_left', 1.0, 0.8, 0.5, 0.05, 0.05, True)
-set_foot_stepping_parameters('front_right', 1.0, 0.8, 0.5, 0.05, 0.05, True)
-set_foot_stepping_parameters('back_right', 1.0, 0.8, 0.0, 0.05, 0.05, True)
-
-# Execute the plan for the robot to walk sadly
-execute_plan()
-'''
-    respones.append(response)
-    # (orig prompt) walk backwards as if you are really scared
-    response = '''
-import numpy as np
-
-# Reset reward for new task
-reset_reward()
-
-# Set torso targets
-set_torso_targets(0.3, 0.0, 0.0, None, (-0.7, 0.0), 0, None)
-
-# Set foot position parameters
-set_foot_pos_parameters('front_left', None, None, None)
-set_foot_pos_parameters('back_left', None, None, None)
-set_foot_pos_parameters('front_right', None, None, None)
-set_foot_pos_parameters('back_right', None, None, None)
-
-# Set foot stepping parameters
-set_foot_stepping_parameters('front_left', 0.7, 0.2, 0.0, 0.05, -0.05, True)
-set_foot_stepping_parameters('back_left', 0.7, 0.2, 0.5, 0.05, -0.05, True)
-set_foot_stepping_parameters('front_right', 0.7, 0.2, 0.5, 0.05, -0.05, True)
-set_foot_stepping_parameters('back_right', 0.7, 0.2, 0.0, 0.05, -0.05, True)
-
-# Execute plan
-execute_plan()
-'''
-    respones.append(response)
-    # walk backwards as if you are really scared
-    response = '''
-import numpy as np
-
-# Set up the torso targets for scared backward walking
-set_torso_targets(0.2, 0, 0, None, (-0.4, 0.0), None, None)
-
-# Set foot stepping parameters for a scared backward walk
-set_foot_stepping_parameters('front_left', 1.2, 0.7, 0.0, 0.05, -0.1, True)
-set_foot_stepping_parameters('back_left', 1.2, 0.7, 0.5, 0.05, -0.1, True)
-set_foot_stepping_parameters('front_right', 1.2, 0.7, 0.5, 0.05, -0.1, True)
-set_foot_stepping_parameters('back_right', 1.2, 0.7, 0.0, 0.05, -0.1, True)
-
-# Execute the plan for the robot to walk backward scaredly
-execute_plan()
-'''
-    respones.append(response)
     reset = '''
 reset_reward()
 '''
     while True:
       # Final response should be code
-      for response in respones:
+      for response in codex_responses:
         try:
           prompt_model.code_executor(response)
           time.sleep(2)
