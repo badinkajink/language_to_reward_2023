@@ -36,7 +36,7 @@ _PROMPT_FLAG = flags.DEFINE_string(
     "prompt", "thinker_coder", "prompt to be used"
 )
 _MODEL_FLAG = flags.DEFINE_string(
-    "model", "gpt-3.5-turbo", "model to be used"
+    "model", "gpt-4-1106-preview", "model to be used"
 )
 # MODEL = "gpt-4"
 MODEL = "gpt-3.5-turbo"
