@@ -23,6 +23,7 @@ from language_to_reward_2023.platforms.barkour import barkour_l2r_task_client
 from language_to_reward_2023.platforms.barkour.prompts import prompt_coder_only as bk_prompt_coder_only
 from language_to_reward_2023.platforms.barkour.prompts import prompt_low_level as bk_prompt_low_level
 from language_to_reward_2023.platforms.barkour.prompts import prompt_thinker_coder as bk_prompt_thinker_coder
+from language_to_reward_2023.platforms.barkour.prompts import prompt_thinker_coder_sentiment_affordance as bk_prompt_thinker_coder_sentiment_affordance
 
 
 @dataclasses.dataclass(frozen=True)
@@ -36,6 +37,7 @@ ALL_TASKS = {
         client=barkour_l2r_task_client.BarkourClient,
         prompts={
             'thinker_coder': bk_prompt_thinker_coder.PromptThinkerCoder,
+            'thinker_coder_sa': bk_prompt_thinker_coder_sentiment_affordance.PromptThinkerCoder_SentimentAffordance,
             'coder_only': bk_prompt_coder_only.PromptCoder,
             'low_level': bk_prompt_low_level.PromptLowLevel,
         },
